@@ -51,7 +51,7 @@ describe('ConstraintService', () => {
         }
       ]
     });
-    constraintService = TestBed.get(ConstraintService);
+    constraintService = TestBed.inject(ConstraintService);
   });
 
   it('should be injected',

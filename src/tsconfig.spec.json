@@ -5,7 +5,6 @@
     "module": "commonjs",
     "target": "es5",
     "baseUrl": "",
-    "emitDecoratorMetadata": true,
     "types": [
       "jasmine",
       "node"

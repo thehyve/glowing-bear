@@ -45,9 +45,9 @@ describe('ResourceService', () => {
         }
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    transmartResourceService = TestBed.get(TransmartResourceService);
-    gbBackendHttpService = TestBed.get(GbBackendHttpService);
+    resourceService = TestBed.inject(ResourceService);
+    transmartResourceService = TestBed.inject(TransmartResourceService);
+    gbBackendHttpService = TestBed.inject(GbBackendHttpService);
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -78,7 +78,7 @@ describe('ResourceService', () => {
         expect(studies[0].id).toBe('CATEGORICAL_VALUES');
       });
     resourceService.getStudies()
-      .subscribe(res => {
+      .subscribe(_res => {
       }, err => {
         expect(err).toBeDefined();
       })
@@ -104,7 +104,7 @@ describe('ResourceService', () => {
         expect(map.has('EHR:VSIGN:HR')).toBe(true);
       });
     resourceService.getCountsPerConcept(dummy)
-      .subscribe((map: Map<string, CountItem>) => {
+      .subscribe((_map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -117,7 +117,7 @@ describe('ResourceService', () => {
         expect(map.size).toBe(2);
       });
     resourceService.getCountsPerStudy(dummy)
-      .subscribe((map: Map<string, CountItem>) => {
+      .subscribe((_map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -131,7 +131,7 @@ describe('ResourceService', () => {
         expect(map.get('EHR').size).toBe(2);
       });
     resourceService.getCountsPerStudyAndConcept(dummy)
-      .subscribe((map: Map<string, Map<string, CountItem>>) => {
+      .subscribe((_map: Map<string, Map<string, CountItem>>) => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -145,7 +145,7 @@ describe('ResourceService', () => {
         expect(item.observationCount).toBe(46);
       });
     resourceService.getCounts(dummy)
-      .subscribe((item: CountItem) => {
+      .subscribe((_item: CountItem) => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -184,7 +184,7 @@ describe('ResourceService', () => {
         expect(res.values.includes('Latino')).toBe(true);
       });
     resourceService.getAggregate(dummy)
-      .subscribe((res) => {
+      .subscribe((_res) => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -211,7 +211,7 @@ describe('ResourceService', () => {
         expect(pedigrees[1].label).toBe('DZ');
       });
     resourceService.getPedigrees()
-      .subscribe(res => {
+      .subscribe(_res => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -226,7 +226,7 @@ describe('ResourceService', () => {
         expect(res[1].constraint.className).toBe('CombinationConstraint');
       });
     resourceService.getCohorts()
-      .subscribe(res => {
+      .subscribe(_res => {
       }, err => {
         expect(err).toBeDefined();
       });
@@ -240,7 +240,7 @@ describe('ResourceService', () => {
         expect(res[0].id).toBe(100);
       });
     resourceService.getCohorts()
-      .subscribe(res => {
+      .subscribe(_res => {
       }, err => {
         expect(err).toBeDefined();
       });

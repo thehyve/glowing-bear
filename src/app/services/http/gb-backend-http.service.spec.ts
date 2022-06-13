@@ -32,7 +32,7 @@ describe('GbBackendHttpService', () => {
         }
       ]
     });
-    gbBackendHttpService = TestBed.get(GbBackendHttpService);
+    gbBackendHttpService = TestBed.inject(GbBackendHttpService);
   });
 
   afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {

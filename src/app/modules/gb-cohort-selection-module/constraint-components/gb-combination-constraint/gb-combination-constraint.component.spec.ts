@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbCombinationConstraintComponent} from './gb-combination-constraint.component';
 import {AutoCompleteModule, DropdownModule} from 'primeng';
@@ -36,7 +36,7 @@ describe('GbCombinationConstraintComponent', () => {
   let fixture: ComponentFixture<GbCombinationConstraintComponent>;
   let constraintService: ConstraintService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbCombinationConstraintComponent,
@@ -82,7 +82,7 @@ describe('GbCombinationConstraintComponent', () => {
     component = fixture.componentInstance;
     component.constraint = new CombinationConstraint();
     fixture.detectChanges();
-    constraintService = TestBed.get(ConstraintService);
+    constraintService = TestBed.inject(ConstraintService);
   });
 
   it('should be created', () => {

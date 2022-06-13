@@ -52,10 +52,10 @@ describe('FractalisService', () => {
       ]
     });
     spyOn(window, 'setInterval').and.stub();
-    fractalisService = TestBed.get(FractalisService);
-    constraintService = TestBed.get(ConstraintService);
-    resourceService = TestBed.get(ResourceService);
-    cohortService = TestBed.get(CohortService);
+    fractalisService = TestBed.inject(FractalisService);
+    constraintService = TestBed.inject(ConstraintService);
+    resourceService = TestBed.inject(ResourceService);
+    cohortService = TestBed.inject(CohortService);
   });
 
   it('should be injected', inject([FractalisService], (service: FractalisService) => {
@@ -185,7 +185,7 @@ describe('FractalisService', () => {
     let cohort2 = new Cohort('id2', 'name2');
     cohort2.selected = true;
     cohortService.cohortsUpdated.asObservable()
-      .subscribe(res => {
+      .subscribe(_res => {
         expect(spySetSubsets).toHaveBeenCalledWith([['one', 'two', 'three'], ['one', 'two', 'three']])
       });
     cohortService.cohorts.push(cohort1);
@@ -225,7 +225,7 @@ describe('FractalisService with analysis disabled', () => {
         FractalisService
       ]
     });
-    fractalisService = TestBed.get(FractalisService);
+    fractalisService = TestBed.inject(FractalisService);
   });
 
   it('should be injected', inject([FractalisService], (service: FractalisService) => {

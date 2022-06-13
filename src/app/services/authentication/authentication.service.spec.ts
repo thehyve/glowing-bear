@@ -46,10 +46,10 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
         }
       ]
     });
-    config = TestBed.get(AppConfig);
-    authenticationService = TestBed.get(AuthenticationService);
-    httpMock = TestBed.get(HttpTestingController);
-    spyOn(history, 'replaceState').and.callFake((data, title, url) => {
+    config = TestBed.inject(AppConfig);
+    authenticationService = TestBed.inject(AuthenticationService);
+    httpMock = TestBed.inject(HttpTestingController);
+    spyOn(history, 'replaceState').and.callFake((_data, _title, _url) => {
     });
     spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => {
       console.log(`Stub redirect to ${target}`)

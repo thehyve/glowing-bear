@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbCohortsComponent} from './gb-cohorts.component';
 import {
@@ -42,7 +42,7 @@ describe('GbCohortsComponent', () => {
   let cohortService: CohortService;
   let confirmationService: ConfirmationService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [GbCohortsComponent],
       imports: [
@@ -78,8 +78,8 @@ describe('GbCohortsComponent', () => {
     fixture = TestBed.createComponent(GbCohortsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    cohortService = TestBed.get(CohortService);
-    confirmationService = TestBed.get(ConfirmationService);
+    cohortService = TestBed.inject(CohortService);
+    confirmationService = TestBed.inject(ConfirmationService);
   });
 
   it('should be created', () => {
@@ -323,6 +323,7 @@ describe('GbCohortsComponent', () => {
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(confirmationService, 'confirm').and.callFake((params) => {
       params.accept();
+      return confirmationService;
     });
     let spy3 = spyOn(component, 'removeCohort').and.stub();
     component.confirmRemoval(e, target);
@@ -337,6 +338,7 @@ describe('GbCohortsComponent', () => {
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
     let spy2 = spyOn(confirmationService, 'confirm').and.callFake((params) => {
       params.reject();
+      return confirmationService;
     });
     component.confirmRemoval(e, query);
     expect(spy1).toHaveBeenCalled();

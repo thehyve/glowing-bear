@@ -59,10 +59,10 @@ describe('TreeNodeService', () => {
         TreeNodeService
       ]
     });
-    treeNodeService = TestBed.get(TreeNodeService);
-    resourceService = TestBed.get(ResourceService);
-    constraintService = TestBed.get(ConstraintService);
-    countService = TestBed.get(CountService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    resourceService = TestBed.inject(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
+    countService = TestBed.inject(CountService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -118,14 +118,14 @@ describe('TreeNodeService', () => {
       fullName: 'other full name'
     };
     let spy1 = spyOn(resourceService, 'getTreeNodes')
-      .and.callFake((fullname, depth, hasCounts, hasTag) => {
+      .and.callFake((fullname, _depth, _hasCounts, _hasTag) => {
         if (fullname === parentFullName) {
           return observableOf([parentNode]);
         }
         return observableOf([otherNode]);
       });
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth')
-      .and.callFake((refNode, depth, descendants) => {
+      .and.callFake((refNode, _depth, descendants) => {
         if (refNode['fullName'] === parentFullName) {
           descendants.push({});
           descendants.push({});
@@ -274,7 +274,7 @@ describe('TreeNodeService', () => {
     constraintService.conceptConstraints.length = 0;
     constraintService.allConstraints.length = 0;
     node.constraint = undefined;
-    let spy1 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.returnValue({label: 'label'});
+    let spy1 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.returnValue(new Concept());
     treeNodeService.processTreeNode(node, constraintService);
     expect(spy1).toHaveBeenCalled();
     expect(node.constraint).not.toBeDefined();

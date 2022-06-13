@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 // tslint:disable-next-line:max-line-length
 import {GbCombinationConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 // tslint:disable-next-line:max-line-length
@@ -62,7 +62,7 @@ describe('Integration tests for constraint composing', () => {
   let event: Event = new Event('');
   let rootConstraint = new CombinationConstraint();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbConstraintComponent,
@@ -111,10 +111,10 @@ describe('Integration tests for constraint composing', () => {
   }));
 
   beforeEach(() => {
-    constraintService = TestBed.get(ConstraintService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    cohortService = TestBed.get(CohortService);
-    resourceService = TestBed.get(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    cohortService = TestBed.inject(CohortService);
+    resourceService = TestBed.inject(ResourceService);
 
     fixture = TestBed.createComponent(GbCombinationConstraintComponent);
     combiComponent = fixture.componentInstance;

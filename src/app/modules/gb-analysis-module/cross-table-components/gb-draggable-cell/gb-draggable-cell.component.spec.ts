@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbDraggableCellComponent} from './gb-draggable-cell.component';
 import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
@@ -23,7 +23,7 @@ describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
   let fixture: ComponentFixture<GbDraggableCellComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbDraggableCellComponent

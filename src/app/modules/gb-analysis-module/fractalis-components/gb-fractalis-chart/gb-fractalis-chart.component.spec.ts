@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {Chart} from '../../../../models/chart-models/chart';
 import {GbFractalisChartComponent} from './gb-fractalis-chart.component';
 import {ChartType} from '../../../../models/chart-models/chart-type';
@@ -26,7 +26,7 @@ describe('GbFractalisChartComponent', () => {
   let fixture: ComponentFixture<GbFractalisChartComponent>;
   let fractalisService: FractalisService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbFractalisChartComponent,
@@ -43,7 +43,7 @@ describe('GbFractalisChartComponent', () => {
   }));
 
   beforeEach(() => {
-    fractalisService = TestBed.get(FractalisService);
+    fractalisService = TestBed.inject(FractalisService);
     fixture = TestBed.createComponent(GbFractalisChartComponent);
     component = fixture.componentInstance;
   });

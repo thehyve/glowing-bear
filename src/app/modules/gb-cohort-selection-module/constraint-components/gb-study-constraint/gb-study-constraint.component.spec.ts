@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbStudyConstraintComponent} from './gb-study-constraint.component';
 import {AutoCompleteModule} from 'primeng';
@@ -32,7 +32,7 @@ describe('GbStudyConstraintComponent', () => {
   let treeNodeService: TreeNodeService;
   let studyService: StudyService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [GbStudyConstraintComponent],
       imports: [
@@ -67,8 +67,8 @@ describe('GbStudyConstraintComponent', () => {
       ]
     })
       .compileComponents();
-    treeNodeService = TestBed.get(TreeNodeService);
-    studyService = TestBed.get(StudyService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    studyService = TestBed.inject(StudyService);
   }));
 
   beforeEach(() => {

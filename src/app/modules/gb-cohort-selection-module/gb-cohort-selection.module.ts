@@ -63,11 +63,6 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
     GbSubjectSetConstraintComponent,
     GbPedigreeConstraintComponent
   ],
-  entryComponents: [
-    GbConstraintComponent,
-    GbCombinationConstraintComponent,
-    GbStudyConstraintComponent
-  ]
 })
 export class GbCohortSelectionModule {
 }

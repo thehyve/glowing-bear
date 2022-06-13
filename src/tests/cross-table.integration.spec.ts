@@ -65,11 +65,11 @@ describe('Integration tests for cross table ', () => {
         CohortService
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    constraintService = TestBed.get(ConstraintService);
-    cohortService = TestBed.get(CohortService);
-    crossTableService = TestBed.get(CrossTableService);
-    treeNodeService = TestBed.get(TreeNodeService);
+    resourceService = TestBed.inject(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
+    cohortService = TestBed.inject(CohortService);
+    crossTableService = TestBed.inject(CrossTableService);
+    treeNodeService = TestBed.inject(TreeNodeService);
 
     selectedTreeNode = {};
     selectedTreeNode['conceptCode'] = 'O1KP:CAT1';

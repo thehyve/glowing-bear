@@ -146,14 +146,14 @@ describe('Integration test for data export', () => {
         DatePipe
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    exportService = TestBed.get(ExportService);
-    cohortService = TestBed.get(CohortService);
-    constraintService = TestBed.get(ConstraintService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    countService = TestBed.get(CountService);
-    variableService = TestBed.get(VariableService);
-    dataTableService = TestBed.get(DataTableService);
+    resourceService = TestBed.inject(ResourceService);
+    exportService = TestBed.inject(ExportService);
+    cohortService = TestBed.inject(CohortService);
+    constraintService = TestBed.inject(ConstraintService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    countService = TestBed.inject(CountService);
+    variableService = TestBed.inject(VariableService);
+    dataTableService = TestBed.inject(DataTableService);
   });
 
   it('should create and run an export job', () => {

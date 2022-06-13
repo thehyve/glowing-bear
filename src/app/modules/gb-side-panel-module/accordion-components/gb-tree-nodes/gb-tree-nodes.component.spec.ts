@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbTreeNodesComponent} from './gb-tree-nodes.component';
 import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule} from 'primeng';
@@ -26,7 +26,7 @@ describe('TreeNodesComponent', () => {
   let fixture: ComponentFixture<GbTreeNodesComponent>;
   let treeNodeService: TreeNodeService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [GbTreeNodesComponent, GbTreeSearchComponent],
       imports: [
@@ -59,7 +59,7 @@ describe('TreeNodesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbTreeNodesComponent);
     component = fixture.componentInstance;
-    treeNodeService = TestBed.get(TreeNodeService);
+    treeNodeService = TestBed.inject(TreeNodeService);
     fixture.detectChanges();
   });
 
@@ -92,11 +92,11 @@ describe('TreeNodesComponent', () => {
       }
     } as Element;
     let treeNodeElm = {
-      addEventListener: function (onWhich: string, callback: Function) {
+      addEventListener: function (_onWhich: string, _callback: Function) {
       }
     };
     let treeNodeElmIcon = {
-      addEventListener: function (onWhich: string, callback: Function) {
+      addEventListener: function (_onWhich: string, _callback: Function) {
       }
     };
     let node = {
@@ -132,11 +132,11 @@ describe('TreeNodesComponent', () => {
       type: 'NUMERIC'
     };
     let treeNodeElm = {
-      addEventListener: function (onWhich: string, callback: Function) {
+      addEventListener: function (_onWhich: string, _callback: Function) {
       }
     };
     let treeNodeElmIcon = {
-      addEventListener: function (onWhich: string, callback: Function) {
+      addEventListener: function (_onWhich: string, _callback: Function) {
       }
     };
     let spy1 = spyOn(treeNodeElm, 'addEventListener').and.stub();
