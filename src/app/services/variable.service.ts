@@ -126,7 +126,7 @@ export class VariableService {
     return new Promise<any>((resolve, reject) => {
       this.isUpdatingVariables = true;
       if (this.isTreeNodesLoading) {
-        window.setTimeout((function () {
+        window.setTimeout((function() {
           this.updateVariables(resolve);
         }).bind(this), 500);
       } else {

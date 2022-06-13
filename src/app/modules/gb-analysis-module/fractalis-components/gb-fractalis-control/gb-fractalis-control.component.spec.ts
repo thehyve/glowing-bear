@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbFractalisControlComponent} from './gb-fractalis-control.component';
 import {FractalisService} from '../../../../services/fractalis.service';
@@ -24,7 +24,7 @@ describe('GbFractalisControlComponent', () => {
   let variableService: VariableService;
   let treeNodeService: TreeNodeService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [GbFractalisControlComponent],
       imports: [
@@ -54,9 +54,9 @@ describe('GbFractalisControlComponent', () => {
   }));
 
   beforeEach(() => {
-    fractalisService = TestBed.get(FractalisService);
-    variableService = TestBed.get(VariableService);
-    treeNodeService = TestBed.get(TreeNodeService);
+    fractalisService = TestBed.inject(FractalisService);
+    variableService = TestBed.inject(VariableService);
+    treeNodeService = TestBed.inject(TreeNodeService);
     fixture = TestBed.createComponent(GbFractalisControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

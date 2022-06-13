@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { GbVariablesTreeComponent } from './gb-variables-tree.component';
 import {FormsModule} from '@angular/forms';
@@ -22,7 +22,7 @@ describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;
   let fixture: ComponentFixture<GbVariablesTreeComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbVariablesTreeComponent, GbTreeSearchComponent

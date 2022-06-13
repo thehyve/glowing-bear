@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbCrossTableComponent} from './gb-cross-table.component';
 import {MockComponent} from 'ng2-mock-component';
@@ -20,7 +20,7 @@ describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
   let fixture: ComponentFixture<GbCrossTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TableModule,

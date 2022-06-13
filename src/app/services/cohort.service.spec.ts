@@ -52,8 +52,8 @@ describe('CohortService', () => {
         CohortService
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    cohortService = TestBed.get(CohortService);
+    resourceService = TestBed.inject(ResourceService);
+    cohortService = TestBed.inject(CohortService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -85,8 +85,8 @@ describe('CohortService', () => {
     q2.subscribed = false;
     q2.bookmarked = true;
     q2.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
-    let spy1 = spyOn(resourceService, 'diffCohort').and.callFake(() => {
-      return observableOf(['foo']);
+    let spy1 = spyOn(resourceService, 'diffCohort').and.callFake((_id: string) => {
+      return observableOf([]);
     });
     let spy2 = spyOn(cohortService, 'parseCohortDiffRecords').and.stub();
     cohortService.handleLoadedCohorts([q, q1, q2]);

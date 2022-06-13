@@ -41,11 +41,11 @@ describe('NavbarService', () => {
         NavbarService
       ]
     });
-    exportService = TestBed.get(ExportService);
-    authService = TestBed.get(AuthenticationService);
-    fractalisService = TestBed.get(FractalisService);
+    exportService = TestBed.inject(ExportService);
+    authService = TestBed.inject(AuthenticationService);
+    fractalisService = TestBed.inject(FractalisService);
     exportEnabled = false;
-    navbarService = TestBed.get(NavbarService);
+    navbarService = TestBed.inject(NavbarService);
   });
 
   it('should be injected', inject([NavbarService], (service: NavbarService) => {

@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbSidePanelComponent} from './gb-side-panel.component';
 import {CommonModule} from '@angular/common';
@@ -40,7 +40,7 @@ describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
   let fixture: ComponentFixture<GbSidePanelComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         MockComponent({selector: 'gb-tree-nodes'}),

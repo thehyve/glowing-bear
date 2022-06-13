@@ -169,12 +169,12 @@ describe('Integration test for cohort saving and restoring', () => {
         CountService
       ]
     });
-    cohortService = TestBed.get(CohortService);
-    constraintService = TestBed.get(ConstraintService);
-    dataTableService = TestBed.get(DataTableService);
-    resourceService = TestBed.get(ResourceService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    countService = TestBed.get(CountService);
+    cohortService = TestBed.inject(CohortService);
+    constraintService = TestBed.inject(ConstraintService);
+    dataTableService = TestBed.inject(DataTableService);
+    resourceService = TestBed.inject(ResourceService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    countService = TestBed.inject(CountService);
   });
 
   it('should restore and save query in relation to other dependent services', () => {

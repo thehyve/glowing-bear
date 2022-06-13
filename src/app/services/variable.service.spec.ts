@@ -72,14 +72,14 @@ describe('VariableService', () => {
         VariableService
       ]
     });
-    variableService = TestBed.get(VariableService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    constraintService = TestBed.get(ConstraintService);
-    countService = TestBed.get(CountService);
+    variableService = TestBed.inject(VariableService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    constraintService = TestBed.inject(ConstraintService);
+    countService = TestBed.inject(CountService);
   });
 
   it('should be created', () => {
-    const service: VariableService = TestBed.get(VariableService);
+    const service: VariableService = TestBed.inject(VariableService);
     expect(service).toBeTruthy();
   });
 
@@ -137,7 +137,7 @@ describe('VariableService', () => {
   it('should update categorised and tree variables when variables get updated', () => {
     spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
     const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
-    const spyVariablesUpdated = spyOn(variableService, 'variablesUpdated').and.stub();
+    const spyVariablesUpdated = spyOnProperty(variableService, 'variablesUpdated', "get").and.stub();
 
     variableService.updateVariables().then(() => {
       expect(variableService.isUpdatingVariables).toBe(false);

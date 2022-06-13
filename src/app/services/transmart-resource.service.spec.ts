@@ -46,9 +46,9 @@ describe('TransmartResourceService', () => {
         },
       ]
     });
-    transmartResourceService = TestBed.get(TransmartResourceService);
-    transmartHttpService = TestBed.get(TransmartHttpService);
-    transmartPackerHttpService = TestBed.get(TransmartPackerHttpService);
+    transmartResourceService = TestBed.inject(TransmartResourceService);
+    transmartHttpService = TestBed.inject(TransmartHttpService);
+    transmartPackerHttpService = TestBed.inject(TransmartPackerHttpService);
   });
 
   it('should be injected',
@@ -241,7 +241,7 @@ describe('TransmartResourceService', () => {
   it('should compute counts for a query', (done) => {
     const constraints = createMockConstraints();
     transmartResourceService.autosaveSubjectSets = false;
-    spyOn(transmartHttpService, 'getCounts').and.callFake((constraint) => {
+    spyOn(transmartHttpService, 'getCounts').and.callFake((_constraint) => {
       const result = new TransmartCountItem();
       result.patientCount = 400;
       result.observationCount = 4000;
@@ -261,7 +261,7 @@ describe('TransmartResourceService', () => {
   it('should compute counts for a query with autosave subjects setting', (done) => {
     transmartResourceService.autosaveSubjectSets = true;
     const constraints = createMockConstraints();
-    spyOn(transmartHttpService, 'savePatientSet').and.callFake((name, constraint) => {
+    spyOn(transmartHttpService, 'savePatientSet').and.callFake((_name, constraint) => {
       const result = new SubjectSet();
       switch (constraint) {
         case constraints.constraintWithoutNegation:

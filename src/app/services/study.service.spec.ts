@@ -13,7 +13,7 @@ import {StudyService} from './study.service';
 
 
 describe('StudyService', () => {
-  let studyService: ResourceService;
+  let studyService: StudyService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('StudyService', () => {
         }
       ]
     });
-    studyService = TestBed.get(StudyService);
+    studyService = TestBed.inject(StudyService);
   });
 
   it('should be injected', inject([StudyService], (service: StudyService) => {

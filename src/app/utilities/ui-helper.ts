@@ -17,7 +17,7 @@ export class UIHelper {
    * @param {number} delay
    */
   public static removePrimeNgLoaderIcon(element: ElementRef, delay: number) {
-    window.setTimeout((function () {
+    window.setTimeout((function() {
       let loaderIcon = element.nativeElement.querySelector('.ui-autocomplete-loader');
       if (loaderIcon) {
         loaderIcon.remove();

@@ -182,7 +182,7 @@ export class TransmartDataTableMapper {
           // if dimension is indexed
           let indexedDimension: TransmartTableDimension = transmartTable.rowDimensions
             .filter(dim => dim.name === rowHeader.dimension)[0];
-          let dimensionObject = indexedDimension.elements[rowHeader.key];
+          let dimensionObject = indexedDimension.elements[rowHeader.key] || {};
           let val: any;
           if (headerNameField in dimensionObject) {
             val = dimensionObject[headerNameField];
