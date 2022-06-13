@@ -27,8 +27,8 @@ describe('AppConfig', () => {
         AppConfig
       ]
     });
-    appConfig = TestBed.get(AppConfig);
-    httpMock = TestBed.get(HttpTestingController);
+    appConfig = TestBed.inject(AppConfig);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   it('should be injected', inject([AppConfig], (service: AppConfig) => {

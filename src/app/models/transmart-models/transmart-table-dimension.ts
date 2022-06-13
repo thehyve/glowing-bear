@@ -8,5 +8,5 @@
 
 export class TransmartTableDimension {
   name: string;
-  elements: Map<string, Map<string, object>>;
+  elements: Map<string, Map<string, Object>>;
 }

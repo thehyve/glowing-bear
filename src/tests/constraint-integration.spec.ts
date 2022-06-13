@@ -6,18 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-// tslint:disable-next-line:max-line-length
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+// eslint-disable-next-line max-len
 import {GbCombinationConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-combination-constraint/gb-combination-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbStudyConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-study-constraint/gb-study-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbConceptConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-concept-constraint/gb-concept-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbPedigreeConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbSubjectSetConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-constraint/gb-constraint.component';
 import {ConstraintService} from '../app/services/constraint.service';
 import {FormsModule} from '@angular/forms';
@@ -62,7 +62,7 @@ describe('Integration tests for constraint composing', () => {
   let event: Event = new Event('');
   let rootConstraint = new CombinationConstraint();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbConstraintComponent,
@@ -111,10 +111,10 @@ describe('Integration tests for constraint composing', () => {
   }));
 
   beforeEach(() => {
-    constraintService = TestBed.get(ConstraintService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    cohortService = TestBed.get(CohortService);
-    resourceService = TestBed.get(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    cohortService = TestBed.inject(CohortService);
+    resourceService = TestBed.inject(ResourceService);
 
     fixture = TestBed.createComponent(GbCombinationConstraintComponent);
     combiComponent = fixture.componentInstance;

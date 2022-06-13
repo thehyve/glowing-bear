@@ -25,8 +25,8 @@ describe('CountService', () => {
         CountService
       ]
     });
-    countService = TestBed.get(CountService);
-    resourceService = TestBed.get(ResourceService);
+    countService = TestBed.inject(CountService);
+    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should be injected',

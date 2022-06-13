@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
@@ -52,7 +52,7 @@ describe('AppComponent', () => {
   let config: AppConfig;
   let router: Router;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent
@@ -104,14 +104,14 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
-    navbarService = TestBed.get(NavbarService);
-    authenticationService = TestBed.get(AuthenticationService);
-    resourceService = TestBed.get(ResourceService);
-    config = TestBed.get(AppConfig);
-    router = TestBed.get(Router);
+    navbarService = TestBed.inject(NavbarService);
+    authenticationService = TestBed.inject(AuthenticationService);
+    resourceService = TestBed.inject(ResourceService);
+    config = TestBed.inject(AppConfig);
+    router = TestBed.inject(Router);
   }));
 
-  it('should be created', async(() => {
+  it('should be created', waitForAsync(() => {
     expect(component).toBeTruthy();
   }));
 
@@ -201,7 +201,7 @@ describe('AppComponent', () => {
       .and.callFake(() => {
         return observableOf(authenticated);
       });
-    spyOn(router.events, 'subscribe').and.returnValue(event).and.callThrough();
+    spyOn(router.events, 'subscribe').and.returnValue(router.events.subscribe(_event => {})).and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     expect(router.events.subscribe).toHaveBeenCalled();

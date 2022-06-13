@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbConstraintComponent} from './gb-constraint.component';
 import {TreeNodeService} from '../../../../services/tree-node.service';
@@ -34,7 +34,7 @@ describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
   let fixture: ComponentFixture<GbConstraintComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbConstraintComponent,

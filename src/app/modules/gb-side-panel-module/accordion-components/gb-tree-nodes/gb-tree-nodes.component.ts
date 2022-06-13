@@ -89,17 +89,17 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       let metadata = dataObject.metadata;
       let treeNodeElm: Element = elm.querySelector('li.ui-treenode');
       let treeNodeElmLabel: Element = elm.querySelector('li.ui-treenode .ui-treenode-label');
-      let handleDragstart = (function (event) {
+      let handleDragstart = (function(event) {
         event.stopPropagation();
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
-      let showInfo = (function (event: MouseEvent) {
+      let showInfo = (function(event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
 
-      let hideInfo = (function (event: MouseEvent) {
+      let hideInfo = (function(event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.hide(event);
       }).bind(this);

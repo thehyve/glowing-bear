@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbCohortSelectionComponent} from './gb-cohort-selection.component';
 import {
@@ -36,7 +36,7 @@ describe('GbCohortSelectionComponent', () => {
   let fixture: ComponentFixture<GbCohortSelectionComponent>;
   let cohortService: CohortService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbCohortSelectionComponent,
@@ -77,7 +77,7 @@ describe('GbCohortSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbCohortSelectionComponent);
     component = fixture.componentInstance;
-    cohortService = TestBed.get(CohortService);
+    cohortService = TestBed.inject(CohortService);
     fixture.detectChanges();
   });
 
@@ -97,7 +97,7 @@ describe('GbCohortSelectionComponent', () => {
   });
 
   it('should prevent node drop on top panel', () => {
-    let func = function () {
+    let func = function() {
     };
     let event = {
       stopPropagation: func,

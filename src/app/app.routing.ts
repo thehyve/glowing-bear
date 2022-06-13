@@ -16,5 +16,5 @@ const routes: Routes = [
   {path: 'main', component: GbMainComponent},
   {path: '**', redirectTo: '/cohort-selection'}];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' });
 

@@ -12,16 +12,16 @@ import {TransmartHttpService} from './transmart-http.service';
 import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
-import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {of as observableOf} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Concept} from '../../models/constraint-models/concept';
+import {TransmartPatient} from "../../models/transmart-models/transmart-patient";
 
 describe('TransmartHttpService', () => {
 
@@ -200,7 +200,7 @@ describe('TransmartHttpService', () => {
         const el1 = new TransmartExportElement();
         const el2 = new TransmartExportElement();
         const elements = [el1, el2];
-        let tableState = undefined;
+        let tableState;
         service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
@@ -365,7 +365,7 @@ describe('TransmartHttpService', () => {
         req.flush(mockData);
       }));
 
-  it('should fetch studies from the TranSMART resource service', function () {
+  it('should fetch studies from the TranSMART resource service', function() {
     let study1 = new TransmartStudy();
     study1.studyId = 'TestStudy1';
     study1.dimensions = ['patient', 'concept', 'start time'];
@@ -392,23 +392,17 @@ describe('TransmartHttpService', () => {
     );
   });
 
-  it('should forward the error when studies cannot be fetched', (done) => {
+  it('should forward the error when studies cannot be fetched', async () => {
     let httpError: any;
     spyOn(transmartHttpService, 'getStudies').and.callFake(() => {
       httpError = new HttpErrorResponse({status: 500});
-      return Observable.of(new Promise(() => {
+      return new Observable<TransmartStudy[]>(() => {
         throw httpError;
-      }));
+      });
     });
 
     // The first time, the studies should be fetched from the resource
-    transmartHttpService.studies.then(() => {
-      fail();
-      done();
-    }).catch((error) => {
-      expect(error).toEqual(httpError);
-      done();
-    });
+    await expectAsync(transmartHttpService.studies).toBeRejectedWith(httpError)
   });
 
   it('should correctly map constraints',
@@ -417,30 +411,30 @@ describe('TransmartHttpService', () => {
         const mockData = {
           foo: 'bar'
         };
-      const c1 = new ConceptConstraint();
-      c1.concept = new Concept();
-      const mockConstraint = new CombinationConstraint();
-      mockConstraint.isRoot = true;
-      mockConstraint.addChild(c1);
-      mockConstraint.dimension = 'Diagnosis ID';
+        const c1 = new ConceptConstraint();
+        c1.concept = new Concept();
+        const mockConstraint = new CombinationConstraint();
+        mockConstraint.isRoot = true;
+        mockConstraint.addChild(c1);
+        mockConstraint.dimension = 'Diagnosis ID';
 
-      service.getCounts(mockConstraint).subscribe((res) => {
-        expect(res['foo']).toBe('bar');
-      });
-      const url = service.endpointUrl + '/observations/counts';
-      const req2 = httpMock.expectOne(url);
-      expect(req2.request.body).toEqual({
-        constraint: {
-          type: 'subselection',
-          dimension: 'Diagnosis ID',
+        service.getCounts(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/counts';
+        const req2 = httpMock.expectOne(url);
+        expect(req2.request.body).toEqual({
           constraint: {
-            type: 'concept',
-            conceptCode: undefined
+            type: 'subselection',
+            dimension: 'Diagnosis ID',
+            constraint: {
+              type: 'concept',
+              conceptCode: undefined
+            }
           }
-        }
-      });
-      req2.flush(mockData);
+        });
+        req2.flush(mockData);
 
-    }));
+      }));
 
 });

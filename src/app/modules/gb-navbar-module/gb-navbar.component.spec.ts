@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbNavbarComponent} from './gb-navbar.component';
 import {MessagesModule, TabMenuModule} from 'primeng';
@@ -25,7 +25,7 @@ describe('GbNavbarComponent', () => {
   let fixture: ComponentFixture<GbNavbarComponent>;
   let navbarService: NavbarService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         CommonModule,
@@ -57,7 +57,7 @@ describe('GbNavbarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbNavbarComponent);
     component = fixture.componentInstance;
-    navbarService = TestBed.get(NavbarService);
+    navbarService = TestBed.inject(NavbarService);
     fixture.detectChanges();
   });
 

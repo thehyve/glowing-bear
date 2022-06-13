@@ -39,9 +39,9 @@ describe('CrossTableService', () => {
         CrossTableService
       ]
     });
-    crossTableService = TestBed.get(CrossTableService);
-    resourceService = TestBed.get(ResourceService);
-    cohortService = TestBed.get(CohortService);
+    crossTableService = TestBed.inject(CrossTableService);
+    resourceService = TestBed.inject(ResourceService);
+    cohortService = TestBed.inject(CohortService);
   });
 
   it('should be created',
@@ -91,7 +91,7 @@ describe('CrossTableService', () => {
     let cohort2 = new Cohort('id2', 'name2');
     cohort2.selected = true;
     cohortService.cohortsUpdated.asObservable()
-      .subscribe(res => {
+      .subscribe(_res => {
         expect(spyUpdateCells).toHaveBeenCalled();
       });
     cohortService.cohortsUpdated.next([cohort1, cohort2]);

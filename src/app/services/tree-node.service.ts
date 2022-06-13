@@ -83,7 +83,7 @@ export class TreeNodeService {
             constraintService.conceptConstraints = [];
             this.processTreeNodes(treeNodes, constraintService);
             let promises = [];
-            treeNodes.forEach((function (node) {
+            treeNodes.forEach((function(node) {
               this.treeNodes.push(node); // to ensure the treeNodes pointer remains unchanged
               let promise = this.loadTreeNext(node, constraintService);
               promises.push(promise);
@@ -171,7 +171,7 @@ export class TreeNodeService {
   processTreeNode(node: GbTreeNode, constraintService: ConstraintService) {
     let tail = node.metadata ? ' ⓘ' : ' ';
     node.label = node.name + tail;
-    let nodeCountItem: CountItem = undefined;
+    let nodeCountItem: CountItem;
     // Extract concept
     if (TreeNodeHelper.isVariableNode(node)) {
       let concept = this.getConceptFromTreeNode(node);

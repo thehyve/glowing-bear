@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {GbCategorizedVariablesComponent} from './gb-categorized-variables.component';
 import {CheckboxModule, DragDropModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
@@ -16,7 +16,7 @@ describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;
   let fixture: ComponentFixture<GbCategorizedVariablesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbCategorizedVariablesComponent

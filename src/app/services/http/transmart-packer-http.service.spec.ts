@@ -36,7 +36,7 @@ describe('TransmartPackerHttpService', () => {
         }
       ]
     });
-    transmartPackerHttpService = TestBed.get(TransmartPackerHttpService);
+    transmartPackerHttpService = TestBed.inject(TransmartPackerHttpService);
   });
 
   afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
@@ -67,7 +67,7 @@ describe('TransmartPackerHttpService', () => {
 
   it('should get export data types',
     inject([HttpTestingController, TransmartPackerHttpService],
-      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
+      (_httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         service.getExportDataTypes().subscribe((res: ExportDataType[]) => {
           expect(res.length).toBe(1);
           expect(res[0].name).toBe('clinical');

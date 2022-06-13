@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbFractalisVisualComponent} from './gb-fractalis-visual.component';
 import {MockComponent} from 'ng2-mock-component';
@@ -14,7 +14,7 @@ describe('GbFractalisVisualComponent', () => {
   let fixture: ComponentFixture<GbFractalisVisualComponent>;
   let fractalisService: FractalisService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbFractalisVisualComponent,
@@ -36,7 +36,7 @@ describe('GbFractalisVisualComponent', () => {
   }));
 
   beforeEach(() => {
-    fractalisService = TestBed.get(FractalisService);
+    fractalisService = TestBed.inject(FractalisService);
     fixture = TestBed.createComponent(GbFractalisVisualComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

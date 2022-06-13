@@ -79,7 +79,7 @@ export class AuthenticationService implements OnDestroy {
 
   private readRolesFromToken(): string[] {
     const clientId = this.config.getConfig('oidc-client-id');
-    let token = jwt_decode(this.token);
+    let token = this.jwt_decode(this.token);
     if (token['resource_access']) {
       let clientAccess = token['resource_access'][clientId];
       if (clientAccess) {
@@ -159,5 +159,9 @@ export class AuthenticationService implements OnDestroy {
 
   set accessLevel(value: Subject<AccessLevel>) {
     this._accessLevel = value;
+  }
+
+  jwt_decode(token: string) {
+    return jwt_decode(token);
   }
 }
