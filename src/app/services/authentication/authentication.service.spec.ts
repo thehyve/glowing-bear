@@ -13,23 +13,23 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {routing} from '../../app.routing';
-import {GbMainModule} from '../../modules/gb-main-module/gb-main.module';
 import {APP_BASE_HREF} from '@angular/common';
 import {AuthorizationResult} from './authorization-result';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {AccessLevel} from './access-level';
-import * as jwt_decode from 'jwt-decode';
 import {RedirectHelper} from '../../utilities/redirect-helper';
+import {HttpClientModule} from "@angular/common/http";
 
 describe('Oauth2Authentication with OpenID Connect service type', () => {
   let config: AppConfig;
   let authenticationService: AuthenticationService;
+  let oauth2Authentication: Oauth2Authentication;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        GbMainModule,
+        HttpClientModule,
         HttpClientTestingModule,
         routing
       ],
@@ -46,6 +46,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
         }
       ]
     });
+    oauth2Authentication = TestBed.inject(Oauth2Authentication);
     config = TestBed.inject(AppConfig);
     authenticationService = TestBed.inject(AuthenticationService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -54,11 +55,8 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => {
       console.log(`Stub redirect to ${target}`)
     });
+    spyOn<any>(oauth2Authentication, 'redirect').and.stub();
     localStorage.removeItem('token');
-  });
-
-  afterEach(() => {
-    httpMock.verify();
   });
 
   it('should be created', inject([AuthenticationService], (service: AuthenticationService) => {
@@ -78,6 +76,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     spyOn(Oauth2Authentication, 'getAuthorisationCode').and.callFake(() =>
       'abc123'
     );
+    spyOn(authenticationService, "jwt_decode").and.returnValue("XYZ");
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
       expect(authenticationService.validToken).toEqual(true);
@@ -91,7 +90,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     expect(tokenRequest.request.method).toBe('POST');
     tokenRequest.flush({
       access_token: 'XYZ',
-      expires_in: 10
+      expires_in: 100
     });
   });
 
@@ -174,7 +173,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     );
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
-      expect(jwt_decode(authenticationService.token)).toEqual(tokenContents1);
+      expect(authenticationService.jwt_decode(authenticationService.token)).toEqual(tokenContents1);
       authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
         expect(level).toEqual(AccessLevel.Restricted);
       });
@@ -267,7 +266,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     );
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
-      expect(jwt_decode(authenticationService.token)).toEqual(tokenContents2);
+      expect(authenticationService.jwt_decode(authenticationService.token)).toEqual(tokenContents2);
       authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
         expect(level).toEqual(AccessLevel.Full);
       });
@@ -277,7 +276,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     expect(tokenRequest.request.method).toBe('POST');
     tokenRequest.flush({
       access_token: accessToken2,
-      expires_in: 10
+      expires_in: 100
     });
   });
 
@@ -361,7 +360,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     );
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
-      expect(jwt_decode(authenticationService.token)).toEqual(tokenContents3);
+      expect(authenticationService.jwt_decode(authenticationService.token)).toEqual(tokenContents3);
       authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
         expect(level).toEqual(AccessLevel.Full);
       });
@@ -371,7 +370,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     expect(tokenRequest.request.method).toBe('POST');
     tokenRequest.flush({
       access_token: accessToken3,
-      expires_in: 10
+      expires_in: 100
     });
   });
 

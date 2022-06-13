@@ -7,17 +7,17 @@
  */
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbCombinationConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-combination-constraint/gb-combination-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbStudyConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-study-constraint/gb-study-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbConceptConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-concept-constraint/gb-concept-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbPedigreeConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbSubjectSetConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import {GbConstraintComponent} from '../app/modules/gb-cohort-selection-module/constraint-components/gb-constraint/gb-constraint.component';
 import {ConstraintService} from '../app/services/constraint.service';
 import {FormsModule} from '@angular/forms';

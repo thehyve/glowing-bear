@@ -60,7 +60,7 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
       let dataObjectType = dataObject['type'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
 
-      let handleDragstart = (function (event) {
+      let handleDragstart = (function(event) {
         event.stopPropagation();
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);

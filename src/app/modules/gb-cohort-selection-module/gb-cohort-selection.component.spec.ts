@@ -97,7 +97,7 @@ describe('GbCohortSelectionComponent', () => {
   });
 
   it('should prevent node drop on top panel', () => {
-    let func = function () {
+    let func = function() {
     };
     let event = {
       stopPropagation: func,

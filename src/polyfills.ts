@@ -71,3 +71,5 @@ import cssVars from 'css-vars-ponyfill';
 cssVars({
   watch: true
 });
+
+(window as any).global = window

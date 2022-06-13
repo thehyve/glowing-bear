@@ -85,7 +85,7 @@ describe('CohortService', () => {
     q2.subscribed = false;
     q2.bookmarked = true;
     q2.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
-    let spy1 = spyOn(resourceService, 'diffCohort').and.callFake((_id:string) => {
+    let spy1 = spyOn(resourceService, 'diffCohort').and.callFake((_id: string) => {
       return observableOf([]);
     });
     let spy2 = spyOn(cohortService, 'parseCohortDiffRecords').and.stub();

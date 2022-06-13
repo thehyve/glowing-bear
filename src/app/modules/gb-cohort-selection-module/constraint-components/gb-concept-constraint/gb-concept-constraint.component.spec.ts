@@ -347,9 +347,9 @@ describe('GbConceptConstraintComponent', () => {
     constraintService.concepts = [c];
     let e = new Event('');
     e['originalEvent'] = {
-      stopPropagation: function () {
+      stopPropagation: function() {
       },
-      preventDefault: function () {
+      preventDefault: function() {
       }
     };
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
