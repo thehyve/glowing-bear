@@ -11,7 +11,7 @@ def versionObject = new JsonSlurper().parseText(versionFile.text)
 
 ext {
   glowingBearVersion = versionObject['version']
-  nodeVersion = '12.20.1'
+  nodeVersion = '12.22.0'
   yarnVersion = '1.22.4'
   gradleWrapperVersion = '4.10.3'
 }
