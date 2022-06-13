@@ -10,5 +10,5 @@ import {TransmartRowHeader} from './transmart-row-header';
 
 export class TransmartRow {
   rowHeaders: TransmartRowHeader[];
-  cells: object[];
+  cells: Object[];
 }

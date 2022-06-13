@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbDroppableZoneComponent} from './gb-droppable-zone.component';
 import {MockComponent} from 'ng2-mock-component';
@@ -25,7 +25,7 @@ describe('GbDroppableZoneComponent', () => {
   let crossTableService: CrossTableService;
   let variableService: VariableService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbDroppableZoneComponent,
@@ -51,8 +51,8 @@ describe('GbDroppableZoneComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbDroppableZoneComponent);
     component = fixture.componentInstance;
-    crossTableService = TestBed.get(CrossTableService);
-    variableService = TestBed.get(VariableService);
+    crossTableService = TestBed.inject(CrossTableService);
+    variableService = TestBed.inject(VariableService);
     fixture.detectChanges();
   });
 
@@ -111,7 +111,7 @@ describe('GbDroppableZoneComponent', () => {
     let dummy = new TrueConstraint();
     let dummySelectedCell = {
       constraint: dummy,
-      remove: function () {
+      remove: function() {
       }
     };
     let spy6 = spyOnProperty(crossTableService, 'selectedConstraintCell', 'get')

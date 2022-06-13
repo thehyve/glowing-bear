@@ -21,138 +21,102 @@ import {TransmartHttpService} from '../app/services/http/transmart-http.service'
 import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
 import {TransmartResourceService} from '../app/services/transmart-resource.service';
 import {TransmartPackerHttpService} from '../app/services/http/transmart-packer-http.service';
-import Spy = jasmine.Spy;
 import {TransmartPackerHttpServiceMock} from '../app/services/mocks/transmart-packer-http.service.mock';
 import {GbBackendHttpService} from '../app/services/http/gb-backend-http.service';
 import {GbBackendHttpServiceMock} from '../app/services/mocks/gb-backend-http.service.mock';
 import {VariableService} from '../app/services/variable.service';
 import {VariableServiceMock} from '../app/services/mocks/variable.service.mock';
+import {TransmartDataTable} from "../app/models/transmart-models/transmart-data-table";
+import {TransmartSort} from "../app/models/transmart-models/transmart-sort";
+import {Order} from "../app/models/table-models/order";
+import Spy = jasmine.Spy;
 
-const mockResponseData = {
-  'columnDimensions': [{
-    'elements': {
-      'TNS:DEM:AGE': {
-        'conceptCode': 'TNS:DEM:AGE',
-        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Demography\\Age\\',
-        'label': 'TNS:DEM:AGE',
-        'name': 'Age'
-      },
-      'TNS:HD:EXPBREAST': {
-        'conceptCode': 'TNS:HD:EXPBREAST',
-        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Breast\\',
-        'label': 'TNS:HD:EXPBREAST',
-        'name': 'Breast'
-      },
-      'TNS:HD:EXPLUNG': {
-        'conceptCode': 'TNS:HD:EXPLUNG',
-        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Lung\\',
-        'label': 'TNS:HD:EXPLUNG',
-        'name': 'Lung'
-      },
-      'TNS:LAB:CELLCNT': {
-        'conceptCode': 'TNS:LAB:CELLCNT',
-        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Lab\\Cell Count\\',
-        'label': 'TNS:LAB:CELLCNT',
-        'name': 'Cell Count'
-      }
-    },
-    'name': 'concept'
-  }, {
-    'name': 'sample_type'
-  }],
+const dimElements01 = new Map([
+  ['TNS:DEM:AGE', new Map([
+    ['conceptCode', 'TNS:DEM:AGE'],
+    ['conceptPath', '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Demography\\Age\\'],
+    ['label', 'TNS:DEM:AGE'],
+    ['name', 'Age']
+  ])
+  ]]);
+
+const rowElements = new Map([
+  ['-43/TNS:43', new Map<string, Object>([
+    ['age', 52],
+    ['birthDate', null],
+    ['deathDate', null],
+    ['id', -43],
+    ['inTrialId', '3'],
+    ['label', '-43/TNS,43'],
+    ['maritalStatus', null],
+    ['race', 'Caucasian'],
+    ['religion', null],
+    ['sex', 'female'],
+    ['sexCd', 'Female']])
+  ],
+  ['-53/TNS:53', new Map<string, Object>([
+    ['age', 42],
+    ['birthDate', null],
+    ['deathDate', null],
+    ['id', -53],
+    ['inTrialId', '2'],
+    ['label', '-53/TNS,53'],
+    ['maritalStatus', null],
+    ['race', 'Latino'],
+    ['religion', null],
+    ['sex', 'male'],
+    ['sexCd', 'Male']
+  ])]
+]);
+
+const mockResponseData: TransmartDataTable = {
+  'columnDimensions': [
+    {
+      'name': 'concept',
+      'elements': dimElements01
+    }
+  ],
   'columnHeaders': [{
     'dimension': 'concept',
     'keys': ['TNS:DEM:AGE', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPLUNG', 'TNS:HD:EXPLUNG',
-      'TNS:LAB:CELLCNT', 'TNS:LAB:CELLCNT']
+      'TNS:LAB:CELLCNT', 'TNS:LAB:CELLCNT'],
+    'elements': []
   }, {
     'dimension': 'sample_type',
+    'keys': [],
     'elements': [null, 'Normal', 'Tumor', 'Normal', 'Tumor', 'Normal', 'Tumor']
   }],
   'offset': 0,
   'rowCount': 3,
   'rowDimensions': [{
-    'elements': {
-      '-43/TNS:43': {
-        'age': 52,
-        'birthDate': null,
-        'deathDate': null,
-        'id': -43,
-        'inTrialId': '3',
-        'label': '-43/TNS:43',
-        'maritalStatus': null,
-        'race': 'Caucasian',
-        'religion': null,
-        'sex': 'female',
-        'sexCd': 'Female',
-        'subjectIds': {
-          'SUBJ_ID': 'TNS:43'
-        },
-        'trial': 'TUMOR_NORMAL_SAMPLES'
-      },
-      '-53/TNS:53': {
-        'age': 42,
-        'birthDate': null,
-        'deathDate': null,
-        'id': -53,
-        'inTrialId': '2',
-        'label': '-53/TNS:53',
-        'maritalStatus': null,
-        'race': 'Latino',
-        'religion': null,
-        'sex': 'male',
-        'sexCd': 'Male',
-        'subjectIds': {
-          'SUBJ_ID': 'TNS:53'
-        },
-        'trial': 'TUMOR_NORMAL_SAMPLES'
-      },
-      '-63/TNS:63': {
-        'age': 40,
-        'birthDate': null,
-        'deathDate': null,
-        'id': -63,
-        'inTrialId': '1',
-        'label': '-63/TNS:63',
-        'maritalStatus': null,
-        'race': 'Caucasian',
-        'religion': null,
-        'sex': 'male',
-        'sexCd': 'Male',
-        'subjectIds': {
-          'SUBJ_ID': 'TNS:63'
-        },
-        'trial': 'TUMOR_NORMAL_SAMPLES'
-      }
-    },
+    'elements': rowElements,
     'name': 'patient'
   }],
   'rows': [{
     'cells': [40, null, 'sample3', 'sample1', 'sample2', 203, 100],
     'rowHeaders': [{
       'dimension': 'patient',
-      'key': '-63/TNS:63'
+      'key': -63
     }]
   }, {
     'cells': [42, null, 'sample5', null, 'sample4', 180, 80],
     'rowHeaders': [{
       'dimension': 'patient',
-      'key': '-53/TNS:53'
+      'key': -53
     }]
   }, {
     'cells': [52, 'sample9', null, ['sample7', 'sample8'], 'sample6', [380, 240], 28],
     'rowHeaders': [{
       'dimension': 'patient',
-      'key': '-43/TNS:43'
+      'key': -43
     }]
   }],
-  'sort': [{
-    'dimension': 'patient',
-    'sortOrder': 'asc'
-  }, {
-    'dimension': 'concept',
-    'sortOrder': 'asc'
-  }]
+  'sort': [new TransmartSort(
+    'patient', Order.ASC),
+    new TransmartSort(
+      'concept', Order.ASC)]
 };
+
 
 /**
  * Test suite that tests the data table functionality, by calling
@@ -199,13 +163,13 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         DataTableService
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    transmartHttpService = TestBed.get(TransmartHttpService);
-    transmartResourceService = TestBed.get(TransmartResourceService);
-    dataTableService = TestBed.get(DataTableService);
+    resourceService = TestBed.inject(ResourceService);
+    transmartHttpService = TestBed.inject(TransmartHttpService);
+    transmartResourceService = TestBed.inject(TransmartResourceService);
+    dataTableService = TestBed.inject(DataTableService);
   });
 
-  it('should load data table data on initialisation', () => {
+  it('should load data table data on initialisation', async () => {
     dataTableCall = spyOn(transmartHttpService, 'getDataTable')
       .and.callFake((tableState: TransmartTableState,
                      constraint: Constraint,
@@ -217,7 +181,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         return observableOf(['s1', 's2'])
       });
 
-    dataTableService.updateDataTable();
+    await dataTableService.updateDataTable();
 
     /**
      * After the studies have been loaded, and the data table service has been initialised ...
@@ -236,7 +200,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
       expect(studyIdsCall).toHaveBeenCalled();
       expect(dataTableCall).toHaveBeenCalled();
       expect(dataTableService.rows.length).toEqual(5);
-    });
+    }, err => {});
   });
 
 });

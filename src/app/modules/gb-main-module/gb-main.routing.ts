@@ -18,16 +18,16 @@ const routes: Routes = [
   },
   {
     path: 'cohort-selection',
-    loadChildren: '../gb-cohort-selection-module/gb-cohort-selection.module#GbCohortSelectionModule'
+    loadChildren: () => import('../gb-cohort-selection-module/gb-cohort-selection.module').then(m => m.GbCohortSelectionModule)
   },
   {
     path: 'analysis',
-    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+    loadChildren: () => import('../gb-analysis-module/gb-analysis.module').then(m => m.GbAnalysisModule)
   },
   {
     path: 'export',
-    loadChildren: '../gb-export-module/gb-export.module#GbExportModule'
+    loadChildren: () => import('../gb-export-module/gb-export.module').then(m => m.GbExportModule)
   }
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forChild(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forChild(routes);

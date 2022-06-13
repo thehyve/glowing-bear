@@ -26,6 +26,8 @@ import {VariableService} from './variable.service';
 import {VariableServiceMock} from './mocks/variable.service.mock';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {CountService} from './count.service';
+import {CohortService} from "./cohort.service";
+import {CohortServiceMock} from "./mocks/cohort.service.mock";
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -68,12 +70,16 @@ describe('ExportService', () => {
           provide: VariableService,
           useClass: VariableServiceMock
         },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
         ExportService
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    exportService = TestBed.get(ExportService);
-    dataTableService = TestBed.get(DataTableService);
+    resourceService = TestBed.inject(ResourceService);
+    exportService = TestBed.inject(ExportService);
+    dataTableService = TestBed.inject(DataTableService);
     exportJob = new ExportJob();
     exportJob.id = 'id';
     exportJob.name = 'test job name';
@@ -92,7 +98,7 @@ describe('ExportService', () => {
         expect(spy1).toHaveBeenCalled();
       })
       .catch(err => {
-        fail('should have succeeded canceling export job but failed');
+        fail('should have succeeded canceling export job but failed' + err);
       });
   });
 
@@ -105,7 +111,7 @@ describe('ExportService', () => {
       .then(() => {
         fail('should have been handling error rather than succeeding in canceling export job');
       })
-      .catch(err => {
+      .catch(_err => {
         expect(spy).toHaveBeenCalled();
         expect(spy1).not.toHaveBeenCalled();
       })
@@ -120,7 +126,7 @@ describe('ExportService', () => {
         expect(spy1).toHaveBeenCalled();
       })
       .catch(err => {
-        fail('should have succeeded archiving export job but failed');
+        fail('should have succeeded archiving export job but failed' + err);
       });
   });
 
@@ -133,7 +139,7 @@ describe('ExportService', () => {
       .then(() => {
         fail('should have been handling error rather than succeeding in archiving export job');
       })
-      .catch(err => {
+      .catch(_err => {
         expect(spy).toHaveBeenCalled();
         expect(spy1).not.toHaveBeenCalled();
       })
@@ -146,7 +152,7 @@ describe('ExportService', () => {
         expect(spy).toHaveBeenCalled();
       })
       .catch(err => {
-        fail('should have succeeded archiving export job but failed');
+        fail('should have succeeded archiving export job but failed' + err);
       });
   });
 
@@ -158,7 +164,7 @@ describe('ExportService', () => {
       .then(() => {
         fail('should have been handling error rather than succeeding in updating export jobs');
       })
-      .catch(err => {
+      .catch(_err => {
         expect(spy).toHaveBeenCalled();
       })
   });
@@ -220,8 +226,8 @@ describe('ExportService with surveyTable', () => {
         ExportService
       ]
     });
-    exportService = TestBed.get(ExportService);
-    dataTableService = TestBed.get(DataTableService);
+    exportService = TestBed.inject(ExportService);
+    dataTableService = TestBed.inject(DataTableService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {

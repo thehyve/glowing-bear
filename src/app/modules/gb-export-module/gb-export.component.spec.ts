@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbExportComponent} from './gb-export.component';
 import {
@@ -61,7 +61,7 @@ describe('GbExportComponent (dataTable)', () => {
   let fixture: ComponentFixture<GbExportComponent>;
   let exportService: ExportService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbExportComponent,
@@ -98,7 +98,7 @@ describe('GbExportComponent (dataTable)', () => {
     fixture = TestBed.createComponent(GbExportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    exportService = TestBed.get(ExportService);
+    exportService = TestBed.inject(ExportService);
   });
 
   it('should be created', () => {
@@ -125,7 +125,7 @@ describe('GbExportComponent (surveyTable)', () => {
   let fixture: ComponentFixture<GbExportComponent>;
   let exportService: ExportService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbExportComponent,
@@ -163,7 +163,7 @@ describe('GbExportComponent (surveyTable)', () => {
     component = fixture.componentInstance;
     component.ngOnInit();
     fixture.detectChanges();
-    exportService = TestBed.get(ExportService);
+    exportService = TestBed.inject(ExportService);
   });
 
   it('should be created', () => {

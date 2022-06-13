@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbConceptConstraintComponent} from './gb-concept-constraint.component';
 import {FormsModule} from '@angular/forms';
@@ -47,7 +47,7 @@ describe('GbConceptConstraintComponent', () => {
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbConceptConstraintComponent,
@@ -97,8 +97,8 @@ describe('GbConceptConstraintComponent', () => {
     fixture = TestBed.createComponent(GbConceptConstraintComponent);
     component = fixture.componentInstance;
     component.constraint = new ConceptConstraint();
-    resourceService = TestBed.get(ResourceService);
-    constraintService = TestBed.get(ConstraintService);
+    resourceService = TestBed.inject(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
     fixture.detectChanges();
   });
 
@@ -113,10 +113,8 @@ describe('GbConceptConstraintComponent', () => {
     let dummyAggregate = {};
     let dummyTrialVistis = [];
     let dummyConcept = new Concept();
-    let spy1 = spyOn(resourceService, 'getAggregate').and.returnValue(observableOf(dummyAggregate));
     let spy2 = spyOn(resourceService, 'getTrialVisits').and.returnValue(observableOf(dummyTrialVistis));
     component.initializeConstraints();
-    expect(spy1).not.toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled();
 
     let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
@@ -125,7 +123,6 @@ describe('GbConceptConstraintComponent', () => {
     dummyConcept.type = ConceptType.NUMERICAL;
     constraint.concept = dummyConcept;
     component.initializeConstraints();
-    expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
@@ -350,9 +347,9 @@ describe('GbConceptConstraintComponent', () => {
     constraintService.concepts = [c];
     let e = new Event('');
     e['originalEvent'] = {
-      stopPropagation: function () {
+      stopPropagation: function() {
       },
-      preventDefault: function () {
+      preventDefault: function() {
       }
     };
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();

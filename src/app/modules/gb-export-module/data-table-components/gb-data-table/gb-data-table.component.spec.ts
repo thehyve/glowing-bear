@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbDataTableComponent} from './gb-data-table.component';
 import {MockComponent} from 'ng2-mock-component';
@@ -18,7 +18,7 @@ describe('GbDataTableComponent', () => {
   let component: GbDataTableComponent;
   let fixture: ComponentFixture<GbDataTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbDataTableComponent,

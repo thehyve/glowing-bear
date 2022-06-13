@@ -65,11 +65,11 @@ describe('Integration tests for cross table ', () => {
         CohortService
       ]
     });
-    resourceService = TestBed.get(ResourceService);
-    constraintService = TestBed.get(ConstraintService);
-    cohortService = TestBed.get(CohortService);
-    crossTableService = TestBed.get(CrossTableService);
-    treeNodeService = TestBed.get(TreeNodeService);
+    resourceService = TestBed.inject(ResourceService);
+    constraintService = TestBed.inject(ConstraintService);
+    cohortService = TestBed.inject(CohortService);
+    crossTableService = TestBed.inject(CrossTableService);
+    treeNodeService = TestBed.inject(TreeNodeService);
 
     selectedTreeNode = {};
     selectedTreeNode['conceptCode'] = 'O1KP:CAT1';
@@ -101,7 +101,7 @@ describe('Integration tests for cross table ', () => {
     selectedTreeNode['visualAttributes'] = ['LEAF', 'ACTIVE', 'CATEGORICAL'];
   });
 
-  it('should update the cross table on tree node drop', () => {
+  it('should update the cross table on tree node drop', async () => {
     let selectedCohort1 = new Cohort('c1', 'name');
     selectedCohort1.selected = true;
     selectedCohort1.constraint = new ConceptConstraint();
@@ -127,20 +127,19 @@ describe('Integration tests for cross table ', () => {
     conjunctiveCategorical.textRepresentation = ConstraintHelper.brief(conjunctiveCategorical);
     let constraints: Constraint[] = [];
     constraints.push(conjunctiveCategorical);
-    let promise = crossTableService.update(constraints);
+    await crossTableService.update(constraints);
     expect(isValid).toBe(true);
     expect(spy1).toHaveBeenCalled();
-    promise.then(() => {
-      expect(spy2).toHaveBeenCalled();
-      expect(spy3).toHaveBeenCalled();
-      expect(crossTableService.crossTable.rowConstraints.length).toBe(1);
-      expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(2);
-      expect(cohortService.allSelectedCohortsConstraint.className).toBe('CombinationConstraint');
-      expect(crossTableService.crossTable.constraint.className).toBe('CombinationConstraint');
-      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.length).toBe(3);
-      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.map(it => it.className))
-        .toEqual(<any>jasmine.arrayContaining(['ConceptConstraint', 'CombinationConstraint', 'StudyConstraint']));
-    });
+    expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
+    expect(crossTableService.crossTable.rowConstraints.length).toBe(1);
+    expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(2);
+    expect(cohortService.allSelectedCohortsConstraint.className).toBe('CombinationConstraint');
+    expect(crossTableService.crossTable.constraint.className).toBe('CombinationConstraint');
+    expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.length).toBe(3);
+    expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.map(it => it.className))
+      .toEqual(<any>jasmine.arrayContaining(['ConceptConstraint', 'CombinationConstraint', 'StudyConstraint']));
+
   });
 
   it('should update the cells of the cross table when value constraints are present', () => {

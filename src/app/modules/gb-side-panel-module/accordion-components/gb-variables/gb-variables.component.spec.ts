@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
 import {AutoCompleteModule, CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng';
@@ -33,7 +33,7 @@ describe('GbVariablesComponent', () => {
   let variableService: VariableService;
   let treeNodeService: TreeNodeService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         GbVariablesComponent,
@@ -75,9 +75,9 @@ describe('GbVariablesComponent', () => {
     fixture = TestBed.createComponent(GbVariablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    constraintService = TestBed.get(ConstraintService);
-    treeNodeService = TestBed.get(TreeNodeService);
-    variableService = TestBed.get(VariableService);
+    constraintService = TestBed.inject(ConstraintService);
+    treeNodeService = TestBed.inject(TreeNodeService);
+    variableService = TestBed.inject(VariableService);
   });
 
   it('should be created', () => {

@@ -413,7 +413,7 @@ Transmart Packer consists of a worker service that performs the export tasks
 and a webapp services that handles export requests, task management and export file downloads.
 
 Transmart Packer requires:
-- Python 3.6 or newer
+- Python 3.7 or newer
 - Redis server
 
 Installation steps for the Transmart Packer services:
@@ -431,7 +431,7 @@ Installation steps for the Transmart Packer services:
 3. Install Transmart Packer:
    ```bash
    source venv/bin/activate
-   pip install --no-cache-dir --upgrade "transmart-packer == 0.5.0"
+   pip install --no-cache-dir --upgrade "transmart-packer == 0.6.1"
    ```
 
 4. Ensure that you have a valid offline token, for asynchronous data access. See [Offline token](#offline-token).
@@ -504,21 +504,21 @@ Glowing Bear requires:
 
 1. Download the application and extract the contents in the `/var/www/glowingbear` directory:
    ```shell
-   GLOWING_BEAR_VERSION=2.0.15
+   GLOWING_BEAR_VERSION=2.0.16
    curl -f -L -o "glowing-bear-${GLOWING_BEAR_VERSION}.tar" \
      "https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/${GLOWING_BEAR_VERSION}/glowing-bear-${GLOWING_BEAR_VERSION}.tar"
    sudo mkdir -p /var/www/glowingbear
    sudo tar xf glowing-bear-${GLOWING_BEAR_VERSION}.tar -C /var/www/glowingbear
    ```
 
-2. Override environment file `/var/www/glowingbear/glowing-bear-2.0.15/app/config/env.json` with the following:
+2. Override environment file `/var/www/glowingbear/glowing-bear-2.0.16/app/config/env.json` with the following:
    ```json
    {
       "env": "default"
    }
    ```
 
-3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.15/app/config/config.default.json` (overwrites the default config file in the `tar`):
+3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.16/app/config/config.default.json` (overwrites the default config file in the `tar`):
    ```json
    {
      "oidc-server-url": "CHANGE ME",
@@ -559,7 +559,7 @@ Glowing Bear requires:
      error_log             /var/log/nginx/glowingbear.example.com:443.error.log;
 
      location / {
-       root /var/www/glowingbear/glowing-bear-2.0.15;
+       root /var/www/glowingbear/glowing-bear-2.0.16;
        index index.html index.htm;
        try_files $uri $uri/ /index.html =404;
      }

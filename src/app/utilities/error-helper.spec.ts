@@ -12,7 +12,7 @@ import {HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from './message-helper';
 import {MessageService} from 'primeng';
 
-fdescribe('ErrorHelper.handleError', () => {
+describe('ErrorHelper.handleError', () => {
 
   beforeEach(() => {
     MessageHelper.messageService = new MessageService();

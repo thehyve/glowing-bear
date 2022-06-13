@@ -228,7 +228,7 @@ export class TransmartMapper {
   }
 
   public static mapDimensions(transmartDimensions: TransmartDimension[]) {
-    return transmartDimensions.sort(function (a, b) {
+    return transmartDimensions.sort(function(a, b) {
       return a.sortIndex - b.sortIndex;
     }).map(transmartDimension => new Dimension(transmartDimension.name));
   }
