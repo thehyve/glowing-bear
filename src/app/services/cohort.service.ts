@@ -76,7 +76,7 @@ export class CohortService {
     this.createCurrentCohort();
     this.loadCohorts();
     // initial updates
-    this.updateCountsWithCurrentCohort();
+    this.updateCountsWithCurrentCohort().catch(() => console.error('could not update counts'));
   }
 
   /**

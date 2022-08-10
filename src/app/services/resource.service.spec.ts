@@ -89,7 +89,8 @@ describe('ResourceService', () => {
     resourceService.updateCohortSelectionCounts(dummy)
       .then((cohortSelectionCounts) => {
         expect(cohortSelectionCounts.subjectCount).toEqual(10);
-      });
+      })
+      .catch(() => console.error('no selection count update: '));
     resourceService.updateCohortSelectionCounts(dummy)
       .catch(err => {
         expect(err).toBeDefined();

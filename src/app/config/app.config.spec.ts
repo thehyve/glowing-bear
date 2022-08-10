@@ -64,7 +64,7 @@ describe('AppConfig', () => {
     };
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
-    appConfig.load();
+    appConfig.load().catch(() => console.error('no config loaded'));
     httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
     httpMock.expectOne(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json').flush(dummyConfigResponse);
     expect(spy).toHaveBeenCalledTimes(2);
@@ -83,7 +83,7 @@ describe('AppConfig', () => {
     AppConfig.path = 'somepath/';
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
-    appConfig.load();
+    appConfig.load().catch(() => console.error('no config loaded'));
     httpMock.expectOne(AppConfig.path + 'env.json').flush('cannot load env json', errorResponse);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spyMessage).toHaveBeenCalledTimes(1);
@@ -101,7 +101,7 @@ describe('AppConfig', () => {
     };
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
-    appConfig.load();
+    appConfig.load().catch(() => console.error('no config loaded'));
     httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
     httpMock.expectOne(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json')
       .flush('cannot load config json', errorResponse);

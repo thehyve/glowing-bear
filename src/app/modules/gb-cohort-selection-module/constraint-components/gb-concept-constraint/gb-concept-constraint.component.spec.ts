@@ -114,7 +114,7 @@ describe('GbConceptConstraintComponent', () => {
     let dummyTrialVistis = [];
     let dummyConcept = new Concept();
     let spy2 = spyOn(resourceService, 'getTrialVisits').and.returnValue(observableOf(dummyTrialVistis));
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy2).not.toHaveBeenCalled();
 
     let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
@@ -122,7 +122,7 @@ describe('GbConceptConstraintComponent', () => {
     let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
     dummyConcept.type = ConceptType.NUMERICAL;
     constraint.concept = dummyConcept;
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
@@ -139,7 +139,7 @@ describe('GbConceptConstraintComponent', () => {
     let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
     let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
 
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
     expect(spy5).not.toHaveBeenCalled();
@@ -154,7 +154,7 @@ describe('GbConceptConstraintComponent', () => {
     let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
     let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
 
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).toHaveBeenCalled();
@@ -169,7 +169,7 @@ describe('GbConceptConstraintComponent', () => {
     let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
     let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
 
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).not.toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe('GbConceptConstraintComponent', () => {
     spyOn(resourceService, 'getTrialVisits').and.callFake(() => {
       return throwError('error');
     });
-    component.initializeConstraints();
+    component.initializeConstraints().catch(() => console.error('error initializing'));
     expect(spy).toHaveBeenCalledTimes(2);
   });
 

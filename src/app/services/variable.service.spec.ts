@@ -112,7 +112,8 @@ describe('VariableService', () => {
     spyOnProperty(treeNodeService, 'isTreeNodesLoadingCompleted', 'get').and.returnValue(true);
     variableService.updateVariables().then(() => {
       expect(spyUpdateVariablesTree).toHaveBeenCalled();
-    });
+    })
+    .catch(exception => console.error(exception.message));
   });
 
   it('should not update variables tree when ontology tree is still loading', () => {
@@ -120,7 +121,8 @@ describe('VariableService', () => {
     spyOnProperty(treeNodeService, 'isTreeNodesLoadingCompleted', 'get').and.returnValue(false);
     variableService.updateVariables().then(() => {
       expect(spyUpdateVariablesTree).not.toHaveBeenCalled();
-    });
+    })
+    .catch(exception => console.error(exception.message));;
   });
 
   it('should update variable in category view when tree-view nodes are checked', () => {
@@ -146,8 +148,8 @@ describe('VariableService', () => {
       expect(variableService.variablesTree.length).toBe(3);
       expect(spyTreeSelection).toHaveBeenCalled();
       expect(spyVariablesUpdated).toHaveBeenCalled();
-    });
-
+    })
+    .catch(exception => console.error(exception.message));;
   });
 
   it('should update variables when tree nodes variables are checked', () => {

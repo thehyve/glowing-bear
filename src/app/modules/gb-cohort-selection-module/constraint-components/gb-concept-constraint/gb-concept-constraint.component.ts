@@ -105,7 +105,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _applyStudyConstraint = false;
 
   ngOnInit() {
-    this.initializeConstraints().then();
+    this.initializeConstraints()
+    .then()
+    .catch(() => console.error('error initializing'));
   }
 
   initializeConstraints() {
