@@ -69,7 +69,7 @@
     "@typescript-eslint/parser": "5.17.0",
     "codecov": "^3.8.3",
     "cucumber": "^2.3.1",
-    "cypress": "^7.7.0",
+    "cypress": "^10.4.0",
     "cypress-cucumber-preprocessor": "^2.5.5",
     "cypress-file-upload": "^5.0.8",
     "deep-equal": "^2.0.1",
