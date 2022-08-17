@@ -2,8 +2,8 @@ os: linux
 dist: xenial
 language: node_js
 node_js:
-  - '12'
   - '14'
+  - '16'
 
 services:
   - xvfb
@@ -46,7 +46,7 @@ deploy:
     skip_cleanup: true
     on:
       all_branches: true
-      node_js: '12'
+      node_js: '14'
       condition: $TRAVIS_BRANCH =~ ^(dev|release)$
 
 # For deployment to Docker Hub, configure the `DOCKER_USERNAME` and `DOCKER_PASSWORD` variables:
