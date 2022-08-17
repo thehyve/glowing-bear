@@ -504,21 +504,21 @@ Glowing Bear requires:
 
 1. Download the application and extract the contents in the `/var/www/glowingbear` directory:
    ```shell
-   GLOWING_BEAR_VERSION=2.0.16
+   GLOWING_BEAR_VERSION=2.0.17
    curl -f -L -o "glowing-bear-${GLOWING_BEAR_VERSION}.tar" \
      "https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/${GLOWING_BEAR_VERSION}/glowing-bear-${GLOWING_BEAR_VERSION}.tar"
    sudo mkdir -p /var/www/glowingbear
    sudo tar xf glowing-bear-${GLOWING_BEAR_VERSION}.tar -C /var/www/glowingbear
    ```
 
-2. Override environment file `/var/www/glowingbear/glowing-bear-2.0.16/app/config/env.json` with the following:
+2. Override environment file `/var/www/glowingbear/glowing-bear-2.0.17/app/config/env.json` with the following:
    ```json
    {
       "env": "default"
    }
    ```
 
-3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.16/app/config/config.default.json` (overwrites the default config file in the `tar`):
+3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.17/app/config/config.default.json` (overwrites the default config file in the `tar`):
    ```json
    {
      "oidc-server-url": "CHANGE ME",
@@ -559,7 +559,7 @@ Glowing Bear requires:
      error_log             /var/log/nginx/glowingbear.example.com:443.error.log;
 
      location / {
-       root /var/www/glowingbear/glowing-bear-2.0.16;
+       root /var/www/glowingbear/glowing-bear-2.0.17;
        index index.html index.htm;
        try_files $uri $uri/ /index.html =404;
      }
