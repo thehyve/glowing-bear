@@ -24,7 +24,7 @@
     "@angular/compiler-cli": "^13.3.9",
     "@angular/core": "^13.3.9",
     "@angular/forms": "^13.3.9",
-    "@angular/localize": "^13.3.9",
+    "@angular/localize": "^13.3.11",
     "@angular/material": "^12.2.13",
     "@angular/platform-browser": "^13.3.9",
     "@angular/platform-browser-dynamic": "^13.3.9",
