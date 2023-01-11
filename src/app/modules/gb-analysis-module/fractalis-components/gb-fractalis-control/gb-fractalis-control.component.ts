@@ -45,6 +45,10 @@ export class GbFractalisControlComponent implements OnInit {
     this.dragCounter--;
   }
 
+  /**
+   * TODO: refactor, as the selectedVariablesUpdated only needs to be triggered when the user decides to add a chart
+   * @param e
+   */
   onDropVariable(e: DragEvent) {
     e.preventDefault();
     this.dragCounter = 0;
@@ -56,6 +60,10 @@ export class GbFractalisControlComponent implements OnInit {
     }
   }
 
+  /**
+   * TODO: refactor, as the selectedVariablesUpdated only needs to be triggered when the user decides to add a chart
+   * @param variable
+   */
   onRemoveVariable(variable) {
     this.fractalisService.clearValidation();
     const index = this.selectedVariables.indexOf(variable);
